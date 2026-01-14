@@ -66,12 +66,69 @@ function getGuildId() {
 }
 
 /**
+ * Extract channel name from the page DOM
+ */
+function getChannelName() {
+  // Try common selectors for channel name in Kook UI
+  const selectors = [
+    '.channel-header-name',
+    '.channel-name',
+    '[class*="channelName"]',
+    '[class*="channel-title"]',
+    '.header-title',
+    '[data-testid="channel-name"]'
+  ];
+
+  for (const selector of selectors) {
+    const el = document.querySelector(selector);
+    if (el && el.textContent.trim()) {
+      return el.textContent.trim();
+    }
+  }
+
+  // Try to find by looking for # prefix (common channel indicator)
+  const allElements = document.querySelectorAll('span, div, h1, h2, h3');
+  for (const el of allElements) {
+    const text = el.textContent.trim();
+    if (text.startsWith('#') && text.length > 1 && text.length < 50) {
+      return text.substring(1).trim();
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Extract guild/server name from the page DOM
+ */
+function getGuildName() {
+  // Try common selectors for guild/server name
+  const selectors = [
+    '.guild-name',
+    '.server-name',
+    '[class*="guildName"]',
+    '[class*="serverName"]',
+    '.guild-header-name',
+    '[data-testid="guild-name"]'
+  ];
+
+  for (const selector of selectors) {
+    const el = document.querySelector(selector);
+    if (el && el.textContent.trim()) {
+      return el.textContent.trim();
+    }
+  }
+
+  return null;
+}
+
+/**
  * Extract auth token from localStorage
  * Kook stores auth data in various localStorage keys
  */
 function getAuthToken() {
   // First check for our intercepted token
-  const interceptedToken = localStorage.getItem('_kook_export_token');
+  const interceptedToken = sessionStorage.getItem('_kook_export_token');
   if (interceptedToken) {
     console.log('[Kook Export] Using intercepted token');
     return interceptedToken;
@@ -171,6 +228,8 @@ function getPageInfo() {
   return {
     channelId: getChannelId(),
     guildId: getGuildId(),
+    channelName: getChannelName(),
+    guildName: getGuildName(),
     token: getAuthToken(),
     url: window.location.href
   };
@@ -182,12 +241,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const info = getPageInfo();
     console.log('[Kook Export] Page info:', {
       url: window.location.href,
-      pathname: window.location.pathname,
-      hash: window.location.hash,
       channelId: info.channelId,
       guildId: info.guildId,
-      hasToken: !!info.token,
-      localStorageKeys: Object.keys(localStorage).slice(0, 20)
+      hasToken: !!info.token
     });
     sendResponse(info);
   }
@@ -196,5 +252,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // Log when content script is loaded
 console.log('[Kook Export] Content script loaded on:', window.location.href);
-console.log('[Kook Export] Pathname:', window.location.pathname);
-console.log('[Kook Export] LocalStorage keys:', Object.keys(localStorage).slice(0, 10));

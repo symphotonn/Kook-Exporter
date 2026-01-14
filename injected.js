@@ -34,7 +34,7 @@
   function saveToken(auth) {
     if (auth && (auth.includes('Bearer') || auth.length > 30)) {
       const token = auth.replace(/^Bearer\s+/i, '');
-      localStorage.setItem('_kook_export_token', token);
+      sessionStorage.setItem('_kook_export_token', token);
       console.log('[Kook Export] Token captured!');
     }
   }

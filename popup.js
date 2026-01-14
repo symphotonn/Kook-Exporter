@@ -2,6 +2,96 @@
 
 const KOOK_API_BASE = 'https://www.kookapp.cn/api/v3';
 
+// i18n translations
+const i18n = {
+  en: {
+    title: 'Kook Chat Export',
+    checking: 'Checking page info...',
+    channelName: 'Channel',
+    guildName: 'Server',
+    authToken: 'Auth Token',
+    tokenNotFound: 'Token not found automatically. Enter it manually:',
+    pasteToken: 'Paste your token here',
+    tokenHint: 'Find it in DevTools → Network → any kookapp.cn request → Headers → Authorization',
+    exportFormat: 'Export format:',
+    downloadImages: 'Download images (creates ZIP)',
+    dateRange: 'Date range (optional):',
+    to: 'to',
+    messageLimit: 'Message limit (0 = all):',
+    exportBtn: 'Export Chat History',
+    fetching: 'Fetching messages...',
+    downloadingImages: 'Downloading images...',
+    ready: 'Ready to export',
+    notKookPage: 'Please open a Kook channel page first',
+    navigateToChannel: 'Navigate to a channel to export',
+    tokenNotFoundError: 'Auth token not found. Enter it manually below.',
+    manualTokenEntered: 'Manual token entered. Ready to export.',
+    selectFormat: 'Please select at least one format',
+    exported: 'Exported {count} messages, {images} images!',
+    found: 'Found',
+    notFound: 'Not found'
+  },
+  zh: {
+    title: 'Kook聊天导出',
+    checking: '正在检查页面信息...',
+    channelName: '频道',
+    guildName: '服务器',
+    authToken: '认证令牌',
+    tokenNotFound: '未能自动获取令牌，请手动输入：',
+    pasteToken: '在此粘贴令牌',
+    tokenHint: '在开发者工具 → 网络 → 任意kookapp.cn请求 → 请求头 → Authorization中查找',
+    exportFormat: '导出格式：',
+    downloadImages: '下载图片（生成ZIP）',
+    dateRange: '日期范围（可选）：',
+    to: '至',
+    messageLimit: '消息数量限制（0=全部）：',
+    exportBtn: '导出聊天记录',
+    fetching: '正在获取消息...',
+    downloadingImages: '正在下载图片...',
+    ready: '准备就绪',
+    notKookPage: '请先打开Kook频道页面',
+    navigateToChannel: '请进入频道后再导出',
+    tokenNotFoundError: '未找到认证令牌，请在下方手动输入。',
+    manualTokenEntered: '已输入令牌，准备就绪。',
+    selectFormat: '请至少选择一种格式',
+    exported: '已导出 {count} 条消息，{images} 张图片！',
+    found: '已找到',
+    notFound: '未找到'
+  }
+};
+
+let currentLang = localStorage.getItem('kook_export_lang') || 'en';
+
+function t(key) {
+  return i18n[currentLang][key] || i18n.en[key] || key;
+}
+
+function applyLanguage() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (i18n[currentLang][key]) {
+      el.textContent = i18n[currentLang][key];
+    }
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (i18n[currentLang][key]) {
+      el.placeholder = i18n[currentLang][key];
+    }
+  });
+  // Update lang toggle button
+  const langToggle = document.getElementById('langToggle');
+  if (langToggle) {
+    langToggle.textContent = currentLang === 'en' ? '中文' : 'EN';
+  }
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'en' ? 'zh' : 'en';
+  localStorage.setItem('kook_export_lang', currentLang);
+  applyLanguage();
+}
+
 let targetTabId = null;
 
 // Check if running in a tab (not popup)
@@ -12,8 +102,6 @@ if (isInTab) {
 
 // DOM elements
 const statusEl = document.getElementById('status');
-const channelIdEl = document.getElementById('channelId');
-const guildIdEl = document.getElementById('guildId');
 const tokenStatusEl = document.getElementById('tokenStatus');
 const exportBtn = document.getElementById('exportBtn');
 const progressEl = document.getElementById('progress');
@@ -31,6 +119,10 @@ const closeBtn = document.getElementById('closeBtn');
 const imageProgressEl = document.getElementById('imageProgress');
 const imageCountEl = document.getElementById('imageCount');
 const imageTotalCountEl = document.getElementById('imageTotalCount');
+const langToggle = document.getElementById('langToggle');
+
+// Language toggle
+langToggle.addEventListener('click', toggleLanguage);
 
 // Pop out to new tab
 popOutBtn.addEventListener('click', async () => {
@@ -58,6 +150,9 @@ function isKookPage(url) {
 
 // Initialize popup
 async function init() {
+  // Apply saved language
+  applyLanguage();
+
   try {
     const urlParams = new URLSearchParams(window.location.search);
     const targetTabParam = urlParams.get('targetTab');
@@ -75,7 +170,7 @@ async function init() {
     console.log('[Kook Export] Tab URL:', tab.url);
 
     if (!isKookPage(tab.url)) {
-      setStatus('error', `Please open a Kook channel page first. Current: ${new URL(tab.url).hostname}`);
+      setStatus('error', t('notKookPage') + ` (${new URL(tab.url).hostname})`);
       return;
     }
 
@@ -97,22 +192,20 @@ async function init() {
 
     window.pageInfo = pageInfo; // Store globally
 
-    channelIdEl.textContent = pageInfo.channelId || 'Not detected';
-    guildIdEl.textContent = pageInfo.guildId || 'Not detected';
-    tokenStatusEl.textContent = pageInfo.token ? 'Found' : 'Not found';
+    tokenStatusEl.textContent = pageInfo.token ? t('found') : t('notFound');
 
     if (!pageInfo.channelId) {
-      setStatus('error', 'Navigate to a channel to export');
+      setStatus('error', t('navigateToChannel'));
       return;
     }
 
     if (!pageInfo.token) {
-      setStatus('error', 'Auth token not found. Enter it manually below.');
+      setStatus('error', t('tokenNotFoundError'));
       manualTokenSection.style.display = 'block';
       manualTokenInput.addEventListener('input', () => {
         if (manualTokenInput.value.trim().length > 10) {
           exportBtn.disabled = false;
-          setStatus('info', 'Manual token entered. Ready to export.');
+          setStatus('info', t('manualTokenEntered'));
         } else {
           exportBtn.disabled = true;
         }
@@ -120,7 +213,7 @@ async function init() {
       return;
     }
 
-    setStatus('success', 'Ready to export');
+    setStatus('success', t('ready'));
     exportBtn.disabled = false;
 
   } catch (error) {
@@ -146,13 +239,13 @@ exportBtn.addEventListener('click', async () => {
   if (!window.pageInfo || !window.pageInfo.channelId || !token) return;
 
   if (!formatJson.checked && !formatCsv.checked) {
-    setStatus('error', 'Please select at least one format');
+    setStatus('error', t('selectFormat'));
     return;
   }
 
   exportBtn.disabled = true;
   progressEl.style.display = 'block';
-  setStatus('info', 'Fetching messages...');
+  setStatus('info', t('fetching'));
 
   try {
     const limit = parseInt(messageLimitInput.value) || 0;
@@ -181,7 +274,7 @@ exportBtn.addEventListener('click', async () => {
     let downloadedImages = {};
 
     if (shouldDownloadImages && allImageUrls.length > 0) {
-      setStatus('info', 'Downloading images...');
+      setStatus('info', t('downloadingImages'));
       imageProgressEl.style.display = 'block';
       imageTotalCountEl.textContent = allImageUrls.length;
 
@@ -247,7 +340,7 @@ exportBtn.addEventListener('click', async () => {
       }
     }
 
-    setStatus('success', `Exported ${messages.length} messages, ${Object.keys(downloadedImages).length} images!`);
+    setStatus('success', t('exported').replace('{count}', messages.length).replace('{images}', Object.keys(downloadedImages).length));
 
   } catch (error) {
     console.error('Export error:', error);
@@ -732,6 +825,30 @@ async function downloadFile(content, filename, mimeType) {
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Fetch channel info from API
+async function fetchChannelInfo(channelId, token) {
+  try {
+    const response = await fetch(`${KOOK_API_BASE}/channel/view?target_id=${channelId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      }
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data.code === 0 && data.data) {
+        return {
+          name: data.data.name,
+          guild_name: data.data.guild?.name
+        };
+      }
+    }
+  } catch (e) {
+    console.log('[Kook Export] fetchChannelInfo error:', e);
+  }
+  return null;
 }
 
 // Start

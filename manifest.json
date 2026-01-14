@@ -1,8 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Kook Chat Export",
+  "short_name": "Kook Export",
   "version": "1.0.0",
   "description": "Export chat history from Kook channels",
+  "homepage_url": "https://github.com/symphotonn/Kook-Exporter",
   "permissions": [
     "storage",
     "downloads",
@@ -13,8 +15,7 @@
     "https://*.kookapp.cn/*",
     "https://*.kook.top/*",
     "https://*.kaihei.co/*",
-    "https://*.kaiheila.cn/*",
-    "*://*/*"
+    "https://*.kaiheila.cn/*"
   ],
   "web_accessible_resources": [
     {

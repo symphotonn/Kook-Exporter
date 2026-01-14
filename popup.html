@@ -56,6 +56,41 @@
     body.in-tab .pop-out-btn {
       display: none;
     }
+    .lang-toggle {
+      font-size: 11px;
+      color: #666;
+      cursor: pointer;
+      padding: 2px 6px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      background: #f9f9f9;
+      margin-right: 6px;
+    }
+    .lang-toggle:hover {
+      background: #eee;
+    }
+    .footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+      font-size: 11px;
+      color: #888;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer a {
+      color: #666;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      color: #333;
+      text-decoration: underline;
+    }
+    .support-links {
+      display: flex;
+      gap: 10px;
+    }
     .status {
       padding: 8px 12px;
       border-radius: 6px;
@@ -118,43 +153,36 @@
 </head>
 <body>
   <div class="header">
-    <h2>Kook Chat Export</h2>
+    <h2 data-i18n="title">Kook Chat Export</h2>
     <div>
+      <button class="lang-toggle" id="langToggle">中文</button>
       <button class="pop-out-btn" id="popOutBtn">↗ Pop out</button>
       <button class="close-btn" id="closeBtn">✕ Close</button>
     </div>
   </div>
 
-  <div id="status" class="status info">Checking page info...</div>
+  <div id="status" class="status info" data-i18n="checking">Checking page info...</div>
 
   <div id="info">
     <div class="info-row">
-      <span class="info-label">Channel ID</span>
-      <span class="info-value" id="channelId">-</span>
-    </div>
-    <div class="info-row">
-      <span class="info-label">Guild ID</span>
-      <span class="info-value" id="guildId">-</span>
-    </div>
-    <div class="info-row">
-      <span class="info-label">Auth Token</span>
+      <span class="info-label" data-i18n="authToken">Auth Token</span>
       <span class="info-value" id="tokenStatus">-</span>
     </div>
   </div>
 
   <div id="manualTokenSection" style="display: none; margin-top: 12px;">
-    <p style="font-size: 12px; color: #666; margin: 0 0 8px 0;">
+    <p style="font-size: 12px; color: #666; margin: 0 0 8px 0;" data-i18n="tokenNotFound">
       Token not found automatically. Enter it manually:
     </p>
-    <input type="text" id="manualToken" placeholder="Paste your token here"
+    <input type="text" id="manualToken" data-i18n-placeholder="pasteToken"
            style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 12px;">
-    <p style="font-size: 11px; color: #999; margin: 4px 0 0 0;">
+    <p style="font-size: 11px; color: #999; margin: 4px 0 0 0;" data-i18n="tokenHint">
       Find it in DevTools → Network → any kookapp.cn request → Headers → Authorization
     </p>
   </div>
 
   <div style="margin-top: 12px;">
-    <label style="font-size: 13px; color: #666;">Export format:</label>
+    <label style="font-size: 13px; color: #666;" data-i18n="exportFormat">Export format:</label>
     <div style="display: flex; gap: 12px; margin-top: 6px;">
       <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
         <input type="checkbox" id="formatJson" checked> JSON
@@ -168,32 +196,41 @@
   <div style="margin-top: 8px;">
     <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
       <input type="checkbox" id="downloadImages" checked>
-      <span style="font-size: 13px; color: #666;">Download images (creates ZIP)</span>
+      <span style="font-size: 13px; color: #666;" data-i18n="downloadImages">Download images (creates ZIP)</span>
     </label>
   </div>
 
   <div style="margin-top: 12px;">
-    <label style="font-size: 13px; color: #666;">Date range (optional):</label>
+    <label style="font-size: 13px; color: #666;" data-i18n="dateRange">Date range (optional):</label>
     <div style="display: flex; gap: 8px; margin-top: 6px; align-items: center;">
       <input type="date" id="startDate"
              style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;">
-      <span style="color: #999;">to</span>
+      <span style="color: #999;" data-i18n="to">to</span>
       <input type="date" id="endDate"
              style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;">
     </div>
   </div>
 
   <div style="margin-top: 12px;">
-    <label style="font-size: 13px; color: #666;">Message limit (0 = all):</label>
+    <label style="font-size: 13px; color: #666;" data-i18n="messageLimit">Message limit (0 = all):</label>
     <input type="number" id="messageLimit" value="0" min="0" step="10"
            style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; margin-left: 8px; font-size: 13px;">
   </div>
 
-  <button id="exportBtn" disabled>Export Chat History</button>
+  <button id="exportBtn" disabled data-i18n="exportBtn">Export Chat History</button>
 
   <div id="progress" class="progress" style="display: none;">
-    <div id="progressText">Fetching messages... <span id="messageCount">0</span></div>
-    <div id="imageProgress" style="display: none; margin-top: 4px;">Downloading images... <span id="imageCount">0</span>/<span id="imageTotalCount">0</span></div>
+    <div id="progressText"><span data-i18n="fetching">Fetching messages...</span> <span id="messageCount">0</span></div>
+    <div id="imageProgress" style="display: none; margin-top: 4px;"><span data-i18n="downloadingImages">Downloading images...</span> <span id="imageCount">0</span>/<span id="imageTotalCount">0</span></div>
+  </div>
+
+  <div class="footer">
+    <span>v1.0.0</span>
+    <div class="support-links">
+      <a href="https://ko-fi.com/YOUR_KOFI" target="_blank">☕ Ko-fi</a>
+      <a href="https://afdian.net/a/YOUR_AFDIAN" target="_blank">💖 爱发电</a>
+      <a href="https://github.com/symphotonn/Kook-Exporter" target="_blank">GitHub</a>
+    </div>
   </div>
 
   <script src="jszip.min.js"></script>
