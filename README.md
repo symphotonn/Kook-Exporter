@@ -65,7 +65,7 @@ Export chat history from Kook channels to JSON/CSV with images.
 
 ### Support
 
-If you find this extension useful, consider supporting:
+If you find this extension useful, buy me a coffee ☕
 
 <img src="donate/wechat.JPG" width="200" alt="WeChat">
 
@@ -134,7 +134,7 @@ If you find this extension useful, consider supporting:
 
 ### 支持作者
 
-如果觉得这个扩展有用，欢迎支持：
+如果觉得这个扩展有用，请我喝杯咖啡吧 ☕
 
 <img src="donate/wechat.JPG" width="200" alt="微信赞赏">
 
