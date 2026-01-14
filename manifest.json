@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "Kook Chat Export",
+  "version": "1.0.0",
+  "description": "Export chat history from Kook channels",
+  "permissions": [
+    "storage",
+    "downloads",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.kookapp.cn/*",
+    "https://*.kook.top/*",
+    "https://*.kaihei.co/*",
+    "https://*.kaiheila.cn/*",
+    "*://*/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["injected.js"],
+      "matches": ["https://*.kook.top/*", "https://*.kookapp.cn/*", "https://*.kaihei.co/*", "https://*.kaiheila.cn/*"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Kook Chat Export"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.kook.top/*",
+        "https://*.kookapp.cn/*",
+        "https://*.kaihei.co/*",
+        "https://*.kaiheila.cn/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
