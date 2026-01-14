@@ -67,7 +67,8 @@ Export chat history from Kook channels to JSON/CSV with images.
 
 If you find this extension useful, consider supporting:
 
-- [Ko-fi](https://ko-fi.com/YOUR_KOFI)
+<img src="donate/wechat.JPG" width="200" alt="WeChat">
+
 - [GitHub](https://github.com/symphotonn/Kook-Exporter)
 
 ---
@@ -135,7 +136,8 @@ If you find this extension useful, consider supporting:
 
 如果觉得这个扩展有用，欢迎支持：
 
-- [爱发电](https://afdian.net/a/YOUR_AFDIAN)
+<img src="donate/wechat.JPG" width="200" alt="微信赞赏">
+
 - [GitHub](https://github.com/symphotonn/Kook-Exporter)
 
 ---
