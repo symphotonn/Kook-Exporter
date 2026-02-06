@@ -63,13 +63,6 @@ Export chat history from Kook channels to JSON/CSV with images.
 | "Auth token not found" | Refresh the page, make sure you're logged in |
 | Export is slow | Large channels take time due to API rate limits |
 
-### Support
-
-If you find this extension useful, buy me a coffee ☕
-
-<img src="donate/wechat.JPG" width="200" alt="WeChat">
-
-- [GitHub](https://github.com/symphotonn/Kook-Exporter)
 
 ---
 
@@ -131,14 +124,6 @@ If you find this extension useful, buy me a coffee ☕
 | "请进入频道后再导出" | 打开Kook频道页面（URL包含`/channels/...`） |
 | "未找到认证令牌" | 刷新页面，确保已登录 |
 | 导出速度慢 | 大频道需要时间，受API速率限制 |
-
-### 支持作者
-
-如果觉得这个扩展有用，请我喝杯咖啡吧 ☕
-
-<img src="donate/wechat.JPG" width="200" alt="微信赞赏">
-
-- [GitHub](https://github.com/symphotonn/Kook-Exporter)
 
 ---
 
